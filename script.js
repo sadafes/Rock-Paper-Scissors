@@ -36,6 +36,7 @@ const pick = (e) => {
   pickByPlayer(e.currentTarget.dataset.pick);
   pickByHouse();
   hideOptions();
+  fight();
   showFight();
 };
 
@@ -43,10 +44,12 @@ const pickByPlayer = (pickedOption) => {
   state = {
     ...state,
     playerPick: pickedOption,
+  
   };
 };
 
 const pickByHouse = () => {
+
   const options = ["rock", "paper", "scissors"];
   const filteredOptions = options.filter(option => option !== state.playerPick); 
   const HousePick = filteredOptions[Math.floor(Math.random() * filteredOptions.length)]; 
@@ -57,16 +60,25 @@ const pickByHouse = () => {
 };
 
 const hideOptions = () => {
-  const optionsElement = document.querySelector(".options");
-  optionsElement.classList.add("active");
-};
+  document.querySelector('section').classList.add("action");
+  document.querySelectorAll(".options button").forEach((button) => {
+    button.classList.add("picked");
+  if (button.dataset.pick === state.playerPick) {
+    button.classList.add('anime'); 
+} else {
+    button.classList.add('hidden'); 
+}
+});
+setTimeout(() => {
+  document.querySelector(".options").classList.add("active");
+  }, 1500);
+}
 
-const showFight = () => {
-  const fightElement = document.querySelector(".fight");
-  fightElement.classList.add("active");
+const fight = () => {
   createElementPickedByPlayer();
-  createElementPickedByHouse();
-
+  setTimeout(() => {
+    createElementPickedByHouse();
+  }, 1500);
   document.querySelectorAll(".options button").forEach((button) => {
     button.setAttribute("tabindex", -1);
   });
@@ -75,17 +87,24 @@ const showFight = () => {
   showResult();
 };
 
+const showFight = () => {
+  setTimeout(() => {
+    const fightElement = document.querySelector(".fight");
+    fightElement.classList.add("active");
+}, 1500); 
+}
+
 const showResult = () => {
   const resultTextElement = document.querySelector(".result__text");
 
-   if (winningResultMap[state.playerPick].includes(state.HousePick)) {
+  if (winningResultMap[state.playerPick].includes(state.HousePick)) {
     resultTextElement.innerHTML = "YOU WIN";
     state = {
       ...state,
       playerWins: state.playerWins + 1,
     };
     localStorage.setItem(playerWinsLSKey, state.playerWins);
-    setTimeout(() => highlightWinner("player"), 800);
+    setTimeout(() => highlightWinner("player"), 3800);
   } else {
     resultTextElement.innerHTML = "YOU LOSE";
     state = {
@@ -95,21 +114,33 @@ const showResult = () => {
     localStorage.setItem(HouseWinsLSKey, state.HouseWins);
 
     resultButtonElement.classList.add("lost");
-    setTimeout(() => highlightWinner("house"), 800);
+    setTimeout(() => highlightWinner("house"), 3800);
   }
 
-  setTimeout(renderResult, 1200);
+  setTimeout(renderResult, 2200);
 
-  setTimeout(renderScore, 1800);
+  setTimeout(renderScore, 5800);
 
 };
 
 const renderResult = () => {
+  setTimeout(() => {
   document.querySelector(".result").classList.add("shown");
   document.querySelector(".pick-player").classList.add("moved");
   document.querySelector(".pick-house").classList.add("moved");
+}, 4000);
 };
 
+const createElementSelectedByPlayer = () => {
+  const playerPick = state.playerPick;
+
+  const pickContainer = document.querySelector(
+    ".button button-scissors"
+  );
+
+  pickContainer.innerHTML = "";
+  pickContainer.appendChild(createPickElement(playerPick));
+};
 const createElementPickedByPlayer = () => {
   const playerPick = state.playerPick;
 
@@ -125,9 +156,33 @@ const createElementPickedByHouse = () => {
   const HousePick = state.HousePick;
 
   const pickContainerElement = document.querySelector(".pick__container-house");
+  const houseTitleElement = document.getElementById("house-title");
 
-  pickContainerElement.innerHTML = "";
-  pickContainerElement.appendChild(createPickElement(HousePick));
+  const fullText = "THE HOUSE IS PICKING";
+  houseTitleElement.textContent = "";
+  houseTitleElement.classList.add("typing");
+
+  pickContainerElement.innerHTML = '<div class="loading-dots"></div>';
+
+  let index = 0;
+  const typingInterval = setInterval(() => {
+    houseTitleElement.textContent += fullText[index];
+    index++;
+
+    if (index === fullText.length) {
+      clearInterval(typingInterval);
+      houseTitleElement.classList.remove("typing");
+        
+        setTimeout(() => {
+          houseTitleElement.textContent = "THE HOUSE PICKED";
+  
+          setTimeout(() => {
+            pickContainerElement.innerHTML = ""; 
+            pickContainerElement.appendChild(createPickElement(HousePick));
+          }, 500); 
+        }, 1000);
+    }
+  }, 100); 
 };
 
 const createPickElement = (option) => {
@@ -148,16 +203,20 @@ const createPickElement = (option) => {
 };
 
 const highlightWinner = (winner) => {
-  if (winner === "player") {
-    document
-      .querySelector(".pick__container-player .button")
-      .classList.add("winner");
-  } else if (winner === "house") {
-    document
-      .querySelector(".pick__container-house .button")
-      .classList.add("winner");
+  setTimeout(() => {
+    if (winner === "player") {
+      document
+        .querySelector(".pick__container-player .button")
+        .classList.add("winner");
+    } else if (winner === "house") {
+      document
+        .querySelector(".pick__container-house .button")
+        .classList.add("winner");
+    }
+  }, 1500);
+  
   }
-};
+
 
 const reset = () => {
   const fightElement = document.querySelector(".fight");
@@ -165,6 +224,14 @@ const reset = () => {
 
   const optionsElement = document.querySelector(".options");
   optionsElement.classList.remove("active");
+  document.querySelector("section").classList.remove("action");
+  const buttonsEle = document.querySelectorAll('.button'); 
+
+buttonsEle.forEach(button => {
+    button.classList.remove("hidden"); 
+    button.classList.remove("anime");
+    button.classList.remove("picked");
+});
 
   document.querySelectorAll(".options button").forEach((button) => {
     button.setAttribute("tabindex", 0);
@@ -188,7 +255,11 @@ openRulesBtn.addEventListener("click", () => {
 closeRulesBtn.addEventListener("click", () => {
   rulesOverlay.classList.remove("show");
 });
-
+rulesOverlay.addEventListener("click", (event) => {
+  if (event.target === rulesOverlay) {
+    rulesOverlay.classList.remove("show");
+  }
+});
 const init = () => {
   renderScore();
   bindPickEvents();
