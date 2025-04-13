@@ -65,47 +65,59 @@
   /* Main part */
   main {
     margin: 0 auto;
-    max-width: 600px;
+    max-width: 800px;
     min-height: 80vh;
-    padding: 50px 0;
+    padding: 15px 0;
     position: relative;
   }
   section {
-    height: 350px;
+    width: 500px;
+    height: 500px;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
-    max-width: 400px;
     margin: 0 auto;
     position: relative;
-  }
-  section::before {
     background-image: url('./images/bg-triangle.svg');
     background-repeat: no-repeat;
-    background-size: cover;
-    content: '';
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    position: absolute;
-    top: 0; 
-    left: 0;
+    background-position: center;
+}
+section.action{
+  background-image: none;
 }
 .options {
-  transform: scale(0.7); 
+    opacity: 1;
+  visibility: visible;
+  transition: opacity 0.6s ease;
   transform-origin: center; 
 }
+
   .options.active {
+
     display: none;
-    transform: translate(-200%, -50%);
+    /*transform: translate(-200%, -50%);*/
   }
-  .options .button {
+  .options .button{
     position: absolute;
-    width: 60%;
+    width: 35%;
     cursor: pointer;
   }
-
+  .options .button::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: hsla(230, 72%, 86%, 0.1);
+    border-radius: 50%;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.4s ease;
+    z-index: -1;
+  }
+  .options .button:hover::before {
+    opacity: 1;
+    transform: scale(1.4);
+  }
   .button {
     aspect-ratio: 1 / 1;
     border: solid 0;
@@ -114,12 +126,10 @@
     border-radius: 50%;
     align-items: center;
     box-shadow: inset 0px -6px 1px rgba(0, 0, 0, 0.2);
+    
   }
   .button img {
     width: 50%; 
-  }
-  .options .button:hover{
-    box-shadow: 0 0 0 30px hsla(230, 72%, 86%, 0.05);
   }
     .button__image-container {
     background-color: var(--color-main);
@@ -139,31 +149,82 @@
   }
   .button-scissors {
     background: linear-gradient(var(--color-scissors));
-  }
+    }
   .button-rock {
     background: linear-gradient(var(--color-rock));
   }
-  .options .button-paper {
+  .options .button-paper{
     left: 0;
     top: 0;
-    transform: translate(-50%, -50%);
   }
   .options .button-scissors {
     right: 0;
     top: 0;
-    transform: translate(50%, -50%);
   }
   .options .button-rock {
     bottom: 0;
-    left: 50%;
-    transform: translate(-50%, 50%);
   }
-  /* Pick section */
+  /*player Pick Action*/
+  .options .button.picked {
+    pointer-events: none;
+    cursor: default;
+  }
+    .options .button.picked::before {
+    opacity: 0 !important;
+    transform: scale(0.5) !important;
+    transition: none !important;
+  }
+.button-paper.anime {
+  animation: spinAndMovePaper 1.4s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+.button-scissors.anime {
+  animation: spinAndMovescissors 1.4s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+.button-rock.anime {
+  animation: spinAndMoveRock 1.4s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+@keyframes spinAndMovePaper {
+  from {transform: translate(0, 0) rotate(0deg);}
+  to {transform: translate(-10px, 85px) rotate(-360deg) scale(1.25);}
+}
+@keyframes spinAndMovescissors {
+  from {transform: translate(0, 0) rotate(0deg);}
+  to {transform: translate(-330px, 85px) rotate(-360deg) scale(1.25);}
+}
+@keyframes spinAndMoveRock {
+  from {transform: translate(0, 0) rotate(0deg);}
+  to {transform: translate(-175px, -240px) rotate(-360deg) scale(1.25);}
+}
+  /*house Pick Action*/
+  .typing::after {
+    content: '|';
+    animation: blink 0.7s steps(1) infinite;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+  .loading-dots::after {
+    content: ' .';
+    animation: dots 1s steps(3, end) infinite;
+    font-size: 70px; 
+    color: #ffffff; 
+    margin-left: 5px; 
+  }
+    @keyframes dots {
+    0% { content: ' .'; }
+    33% { content: ' ..'; }
+    66% { content: ' ...'; }
+    100% { content: ' ....'; } 
+    }
+   /* Fight section */
   .fight {
     align-items: center;
     color: var(--color-main);
     display: none;
-    width: 100%;
+    max-width: 700px;
+    position: relative;
+    margin: 0 auto;
   }
   .fight.active {
     display: flex;
@@ -171,12 +232,12 @@
   .button.winner::after {
     content: "";
     position: absolute;
-    width: 130%;
-    height: 150%;
+    width: 60%;
+    height: 70%;
     background: radial-gradient(circle, hsla(230, 89%, 62%, 0.2), transparent);
-    box-shadow: 0 0 0 60px hsla(230, 89%, 62%, 0.05),
-      0 0 0 120px hsla(230, 89%, 62%, 0.02),
-      0 0 0 180px rgba(255, 255, 255, 0.009);
+    box-shadow: 0 0 0 60px hsla(230, 80%, 66%, 0.09),
+      0 0 0 120px hsla(230, 89%, 62%, 0.05),
+      0 0 0 180px rgba(255, 255, 255, 0.01);
     border-radius: 50%;
     z-index: -10;
   }
@@ -195,10 +256,10 @@
     width: 50%;
   }
   .pick-player.moved {
-    transform: translate(-50%, 0);
+    transform: translate(-30%, 0);
   }
   .pick-house.moved {
-    transform: translate(50%, 0);
+    transform: translate(30%, 0);
   }
   .pick__title {
     display: block;
@@ -221,7 +282,7 @@
     justify-content: center;
     flex-wrap: wrap;
     left: 50%;
-    top: 50%;
+    top: 70%;
     overflow: hidden;
     position: absolute;
     transform: scaleX(0) translate(-50%, -100%);
@@ -253,8 +314,8 @@
   /* Rules */
     .open-rules {
     position: absolute;
-    bottom: 10px;
-    right: -20%;
+    bottom: 32px;
+    right: 32px;
     padding: 10px 37px;
     border-radius: 8px;
     cursor: pointer;
@@ -291,6 +352,7 @@
   .rules-page h3 {
     font-size: 32px;
     line-height: 32px;
+    margin-bottom: 48px;
     color: var(--color-points);
   }
     .rules-page {
@@ -298,18 +360,19 @@
     justify-content: space-between;
     flex-wrap: wrap;
     align-items: center;
-    margin-bottom: 40px;
     background-color: var(--color-main);
-    padding: 40px;
+    padding: 32px;
     border-radius: 5px;
     text-align: center;
     max-width: 400px;
   }
+  
   .close-rules {
     background-color: var(--color-main);
     color: var(--color-points);
     border: none;
     padding: 10px;
+    margin-bottom: 48px;
     cursor: pointer;
   }
   /* footer */
@@ -329,7 +392,21 @@
       padding: 16px;
     }
     main {
-      padding: 100px 0;
+      padding: 20px 10px;
+      min-height: auto;
+      margin-top: 90px;
+    }
+      section {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1 / 1; 
+      background-size: 70%;
+      margin-bottom: 70px;
+    }
+      .options {
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
     }
     .score {
       padding: 8px 12px;
@@ -338,11 +415,31 @@
       font-size: 21px;
       line-height: 18px;
     }
+    .score span {
+      font-size: 10px;
+      font-style: normal;
+      font-weight: 600;
+      line-height: normal;
+    }
+    @keyframes spinAndMovePaper {
+      from {transform: translate(0, 0) rotate(0deg);}
+      to {transform: translate(20%, 0) rotate(-360deg) scale(0.9);}
+    }
+    @keyframes spinAndMovescissors {
+      from {transform: translate(0, 0) rotate(0deg);}
+      to {transform: translate(-160%, 0) rotate(-360deg) scale(0.9);}
+    }
+    @keyframes spinAndMoveRock {
+      from {transform: translate(0, 0) rotate(0deg);}
+      to {transform: translate(-75%, -180%) rotate(-360deg) scale(0.9);}
+    }
     .fight {
       flex-wrap: wrap;
+      margin-bottom: 70px;
+      margin-top: 90px;
     }
     .pick__title {
-      font-size: 15px;
+      font-size: 13px;
       line-height: 32px; 
       letter-spacing: 1.875px;
       transform: translate(-50%, 200%);
@@ -359,6 +456,10 @@
       left: 0;
       right: 0;
       transform: translate(0, 0);
+    }
+    .button.winner::after{
+      height: 80%;
+      width: 80%;
     }
     .result {
       transform: translate(0, 0) scaleX(0);
